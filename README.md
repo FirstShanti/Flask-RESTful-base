@@ -37,24 +37,23 @@ A template and environment for building a RESTful application for anything you c
 
 ### Install Docker:
 
-Docker
-[Docker](https://docs.docker.com/get-docker/)
+[Docker install](https://docs.docker.com/get-docker/)
 
 ### Create .env file with credentials and parameters:
 
-- MYSQL_USER=`<username>`
-- MYSQL_ROOT_PASSWORD=`<userpassword>`
+- MYSQL_USER=`username`
+- MYSQL_ROOT_PASSWORD=`userpassword`
 - MYSQL_HOST=database
 - MYSQL_PORT=3306
-- MYSQL_DB=`<db_name>`
+- MYSQL_DB=`db_name`
 
 - APP_SERVER_HOST=0.0.0.0
-- APP_SERVER_PORT=`<port>`
-- ENVIRONMENT=`<Development or Production>` 
-- SECRET_KEY=`<secret key>`
+- APP_SERVER_PORT=`port`
+- ENVIRONMENT=`Development or Production` 
+- SECRET_KEY=`secret key`
 
 # All is done
 
 ### Run docker containers:
 
-~<project path>$ docker-compose up
+~project path$ docker-compose up

@@ -1,6 +1,7 @@
 # Custom files
 TODO
 *.db
+server/migrations
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

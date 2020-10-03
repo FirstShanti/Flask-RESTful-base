@@ -37,9 +37,8 @@ parser = reqparse.RequestParser(bundle_errors=True)
 
 migrate = Migrate(app, db)
 manager = Manager(app)
-manager.add_command('db', MigrateCommand) 
+manager.add_command('db', MigrateCommand)
 
-# ma = Marshmallow(app)
 
 # MODELS
 class User(db.Model):
@@ -71,13 +70,7 @@ class User(db.Model):
         self.get_auth_key()
         self.hash_password()
 
-    def update(self, field, value):
-        if value:
-            server_log.error(f'update: {field}:{value}')
-            self.__dict__[field] = value
-
     def hash_password(self):
-        # print(self.username, self.password, self.created)
         self.password = encrypt_string(self.username + self.password + datetime.utcnow().isoformat())
 
 
@@ -189,13 +182,13 @@ class Users(Resource):
             if (user:= db.session.query(User).filter_by(uuid=uuid).first_or_404()):
                 if (data:= parser.parse_args()):
                     for field, value in data.items():
-                        user.update(field, value)
+                        if value:
+                            setattr(user, field, value)
                     data = user.to_json
-
-                    server_log.error(f'db: {dir(db)}')
-                    server_log.error(f'db.session: {dir(db.session)}')
-                    db.session.commit()
-                    server_log.error(f'data: {data}')
+                    try:
+                        db.session.commit()
+                    except:
+                        server_log.error(f'not seve: {traceback.format_exc()}')
                     return {'status': 'success', 'message': 'updated', 'data': data}, 200
                 return {'status': 'error', 'message': 'request body is empty'}, 400
             return {'status': 'error', 'message': 'user not found'}, 400
@@ -237,4 +230,3 @@ class Users(Resource):
 
 # api.add_resource(UserLogin, '/login')
 api.add_resource(Users, '/users', '/users/<string:uuid>')
-

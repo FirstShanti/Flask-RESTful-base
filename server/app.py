@@ -118,17 +118,16 @@ def args_to_parser(params, location):
     return parser
 
 
+# RESOURCES
 class Users(Resource):
 
     """
-        Users endpoint: GET, CREATE, DELETE
+        Users endpoint: GET, CREATE, UPDATE, DELETE
     """
 
     def get(self, uuid=None):
         if uuid:
             user = User.query.filter_by(uuid=uuid).first_or_404()
-            server_log.error(f'get user.__dict__: {user.__dict__}')
-            server_log.error(f'get user.to_json: {user.to_json}')
             if user:
                 return {'status': 'success', 'data': user.to_json}, 200
         
@@ -166,7 +165,7 @@ class Users(Resource):
                 try:
                     db.session.add(user)
                     db.session.commit()
-                    server_log.info(f'create: {user.uuid}')
+                    server_log.info(f'User created: {user.uuid}')
                 except:
                     server_log.error(f'not created: {traceback.format_exc()}')
                 else:
@@ -187,8 +186,9 @@ class Users(Resource):
                     data = user.to_json
                     try:
                         db.session.commit()
+                        server_log.info(f'User updated: {data.get('uuid', None)}\ndata: {data}')
                     except:
-                        server_log.error(f'not seve: {traceback.format_exc()}')
+                        server_log.error(f'User changes not save: {user.get('uuid')}\nError log: {traceback.format_exc()}')
                     return {'status': 'success', 'message': 'updated', 'data': data}, 200
                 return {'status': 'error', 'message': 'request body is empty'}, 400
             return {'status': 'error', 'message': 'user not found'}, 400
@@ -204,28 +204,27 @@ class Users(Resource):
         return {'status': 'error', 'message': 'invalid uuid'}, 400
 
 
-# # RESOURCES
-# class UserLogin(Resource):
-#     """
-#         Login User with created access and refresh token
-#     """
-#     parser = reqparse.RequestParser()
-#     for field, valid_param in User_Validator['login'].items():
-#         parser.add_argument(field, *valid_param)
+class UserLogin(Resource):
+    """
+        Login User with created access and refresh token
+    """
+    parser = reqparse.RequestParser()
+    for field, valid_param in User_Validator['login'].items():
+        parser.add_argument(field, *valid_param)
 
-#     def post(self):
-#         data = parser.parser_args()
-#         user = User_Model.query.filter(User.username==data.get('username'))
+    def post(self):
+        data = parser.parser_args()
+        user = User_Model.query.filter(User.username==data.get('username'))
 
-#         if user and safe_str_cmp(user.password, data.get('password')):
-#             access_token = create_access_token(identity=user.uuid, fresh=True)
-#             refresh_token = create_refresh_token(user.uuid)
-#             return {
-#                 'access_token': access_token,
-#                 'refresh_token': refresh_token
-#                 }, 200
+        if user and safe_str_cmp(user.password, data.get('password')):
+            access_token = create_access_token(identity=user.uuid, fresh=True)
+            refresh_token = create_refresh_token(user.uuid)
+            return {
+                'access_token': access_token,
+                'refresh_token': refresh_token
+                }, 200
 
-#         return {'message': 'Invalid credentials!'}, 401
+        return {'message': 'Invalid credentials!'}, 401
 
 
 # api.add_resource(UserLogin, '/login')

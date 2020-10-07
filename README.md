@@ -35,9 +35,10 @@ A template and environment for building a RESTful application for anything you c
 
 ` git clone https://github.com/FirstShanti/Flask-RESTful-vs-MySQL `
 
-### Install Docker:
+### Install Docker, docker-compose:
 
-[Docker install](https://docs.docker.com/get-docker/)
+-[Docker](https://docs.docker.com/get-docker/)
+-[Docker-compose](https://docs.docker.com/compose/install/)
 
 ### Create .env file with credentials and parameters:
 
